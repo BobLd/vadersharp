@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>VaderSharp2</name>
+    </assembly>
+    <members>
+        <member name="T:VaderSharp2.ConfigStore">
+            <summary>
+            Proof of concept for loading the words to be used as boosters, negations etc.
+            
+            Currently not used.
+            </summary>
+        </member>
+        <member name="M:VaderSharp2.ConfigStore.CreateConfig(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="languageCode">Language code in writing style "language-country". Default is British English.</param>
+            <returns>ConfigStore object.</returns>
+        </member>
+        <member name="M:VaderSharp2.ConfigStore.LoadConfig(System.String)">
+            <summary>
+            Initializes the ConfigStore and loads the config file.
+            </summary>
+            <param name="languageCode">Language code in writing style "language-country".</param>
+        </member>
+        <member name="M:VaderSharp2.ConfigStore.LoadNegations(System.Xml.Linq.XElement)">
+            <summary>
+            Loads negations from config file.
+            </summary>
+            <param name="root">Root element of XML document</param>
+        </member>
+        <member name="M:VaderSharp2.ConfigStore.LoadIdioms(System.Xml.Linq.XElement)">
+            <summary>
+            Loads idioms from config file.
+            </summary>
+            <param name="root">Root element of XML document</param>
+        </member>
+        <member name="M:VaderSharp2.ConfigStore.LoadBooster(System.Xml.Linq.XElement)">
+            <summary>
+            Loads booster words from config file.
+            </summary>
+            <param name="root">Root element of XML document</param>
+        </member>
+        <member name="M:VaderSharp2.Extensions.IsUpper(System.String)">
+            <summary>
+            Determine if word is ALL CAPS
+            </summary>
+            <param name="word"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.Extensions.RemovePunctuation(System.String)">
+            <summary>
+            Removes punctuation from word
+            </summary>
+            <param name="word"></param>
+            <returns></returns>
+        </member>
+        <member name="T:VaderSharp2.SentimentAnalysisResults">
+            <summary>
+            A model to represent the result of analysis.
+            </summary>
+        </member>
+        <member name="P:VaderSharp2.SentimentAnalysisResults.Negative">
+            <summary>
+            The proportion of words in the sentence with negative valence.
+            </summary>
+        </member>
+        <member name="P:VaderSharp2.SentimentAnalysisResults.Neutral">
+            <summary>
+            The proportion of words in the sentence with no valence.
+            </summary>
+        </member>
+        <member name="P:VaderSharp2.SentimentAnalysisResults.Positive">
+            <summary>
+            The proportion of words in the sentence with positive valence.
+            </summary>
+        </member>
+        <member name="P:VaderSharp2.SentimentAnalysisResults.Compound">
+            <summary>
+            Normalized sentiment score between -1 and 1.
+            </summary>
+        </member>
+        <member name="T:VaderSharp2.SentimentIntensityAnalyzer">
+            <summary>
+            An abstraction to represent the sentiment intensity analyzer.
+            </summary>
+        </member>
+        <member name="M:VaderSharp2.SentimentIntensityAnalyzer.PolarityScores(System.String)">
+            <summary>
+            Return metrics for positive, negative and neutral sentiment based on the input text.
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentimentUtils.Negated(System.Collections.Generic.IList{System.String},System.Boolean)">
+            <summary>
+            Determine if input contains negation words
+            </summary>
+            <param name="inputWords"></param>
+            <param name="includenT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentimentUtils.Normalize(System.Double,System.Double)">
+            <summary>
+            Normalizes score to be between -1 and 1
+            </summary>
+            <param name="score"></param>
+            <param name="alpha"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentimentUtils.AllCapDifferential(System.Collections.Generic.IList{System.String})">
+            <summary>
+            Checks whether some but not all of words in input are ALL CAPS
+            </summary>
+            <param name="words"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentimentUtils.ScalarIncDec(System.String,System.Double,System.Boolean)">
+            <summary>
+            Check if preceding words increase, decrease or negate the valence
+            </summary>
+            <param name="word"></param>
+            <param name="valence"></param>
+            <param name="isCapDiff"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentiText.WordsPlusPunc">
+            <summary>
+            Returns mapping of the form {'cat,': 'cat'}, {',cat': 'cat'}
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VaderSharp2.SentiText.GetWordsAndEmoticons">
+            <summary>
+            Removes leading and trailing punctuation. Leaves contractions and most emoticons.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
