@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaderSharp", "VaderSharp\VaderSharp.csproj", "{8216CD49-1D2E-4F93-A69E-6BF4006247B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VaderSharp", "VaderSharp\VaderSharp.csproj", "{8216CD49-1D2E-4F93-A69E-6BF4006247B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaderSharpTestCore", "VaderSharpTestCore\VaderSharpTestCore.csproj", "{4F46C368-5EEE-4D24-80FE-BDB555F7C01E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VaderSharpTestCore", "VaderSharpTestCore\VaderSharpTestCore.csproj", "{4F46C368-5EEE-4D24-80FE-BDB555F7C01E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VaderSharp2", "VaderSharp2\VaderSharp2.csproj", "{AD06DD47-1C5E-412C-9E22-0BE083C9FDC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VaderSharp2.Tests", "VaderSharp2.Tests\VaderSharp2.Tests.csproj", "{7A853C6B-5DAE-4295-8ECD-682D8E3083BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +25,19 @@ Global
 		{4F46C368-5EEE-4D24-80FE-BDB555F7C01E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F46C368-5EEE-4D24-80FE-BDB555F7C01E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F46C368-5EEE-4D24-80FE-BDB555F7C01E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD06DD47-1C5E-412C-9E22-0BE083C9FDC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD06DD47-1C5E-412C-9E22-0BE083C9FDC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD06DD47-1C5E-412C-9E22-0BE083C9FDC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD06DD47-1C5E-412C-9E22-0BE083C9FDC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A853C6B-5DAE-4295-8ECD-682D8E3083BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A853C6B-5DAE-4295-8ECD-682D8E3083BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A853C6B-5DAE-4295-8ECD-682D8E3083BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A853C6B-5DAE-4295-8ECD-682D8E3083BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A4CB1981-DD66-41AE-81EE-C7580804EE34}
 	EndGlobalSection
 EndGlobal
