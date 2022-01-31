@@ -6,6 +6,26 @@ namespace VaderSharp2.Tests
     public class SentimentTest
     {
         [Fact]
+        public void UpperCaseTest()
+        {
+            // https://github.com/codingupastorm/vadersharp/issues/18
+            var analyzer = new SentimentIntensityAnalyzer();
+
+            // Not bad
+            var notBadTest = analyzer.PolarityScores("not bad");
+            Assert.Equal(0, notBadTest.Negative);
+            Assert.Equal(0.26, notBadTest.Neutral);
+            Assert.Equal(0.74, notBadTest.Positive);
+            Assert.Equal(0.431, notBadTest.Compound);
+
+            var NotBadTest = analyzer.PolarityScores("Not bad");
+            Assert.Equal(0, NotBadTest.Negative);
+            Assert.Equal(0.26, NotBadTest.Neutral);
+            Assert.Equal(0.74, NotBadTest.Positive);
+            Assert.Equal(0.431, NotBadTest.Compound);
+        }
+
+        [Fact]
         public void MatchPythonTest()
         {
             var analyzer = new SentimentIntensityAnalyzer();

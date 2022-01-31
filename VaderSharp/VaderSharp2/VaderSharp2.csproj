@@ -20,7 +20,7 @@ Forked from https://github.com/codingupastorm/vadersharp</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\repos\BobLd\vadersharp\VaderSharp\VaderSharp2\VaderSharp2.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -199,24 +199,24 @@ namespace VaderSharp2
         {
             if (startI == 0)
             {
-                if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - 1] }))
+                if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - 1].ToLower() }))
                 {
                     valence *= SentimentUtils.NScalar;
                 }
             }
-            if (startI == 1)
+            else if (startI == 1)
             {
                 if (wordsAndEmoticons[i - 2] == "never" &&
                     (wordsAndEmoticons[i - 1] == "so" || wordsAndEmoticons[i - 1] == "this"))
                 {
                     valence *= 1.5;
                 }
-                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)] }))
+                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)].ToLower() }))
                 {
                     valence *= SentimentUtils.NScalar;
                 }
             }
-            if (startI == 2)
+            else if (startI == 2)
             {
                 if (wordsAndEmoticons[i - 3] == "never"
                     && (wordsAndEmoticons[i - 2] == "so" || wordsAndEmoticons[i - 2] == "this")
@@ -224,7 +224,7 @@ namespace VaderSharp2
                 {
                     valence *= 1.25;
                 }
-                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)] }))
+                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)].ToLower() }))
                 {
                     valence *= SentimentUtils.NScalar;
                 }
