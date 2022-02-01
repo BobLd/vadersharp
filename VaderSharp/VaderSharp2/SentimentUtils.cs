@@ -1,39 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace VaderSharp2
 {
+    /// <summary>
+    /// Sentiment tools.
+    /// </summary>
+    /// <remarks>Checked as of 01/02/2022</remarks>
     internal static class SentimentUtils
     {
         #region Constants
-        // (empirically derived mean sentiment intensity rating increase for booster words)
+        /// <summary>
+        /// Empirically derived mean sentiment intensity rating increase for booster words.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double BIncr = 0.293;
+
+        /// <summary>
+        /// Empirically derived mean sentiment intensity rating increase for booster words.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double BDecr = -0.293;
 
-        // (empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word)
+        /// <summary>
+        /// Empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double CIncr = 0.733;
+
+        /// <summary>
+        /// Empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double NScalar = -0.74;
 
-        public static readonly string[] PuncList =
-        {
-            ".", "!", "?", ",", ";", ":", "-", "'", "\"","!!", "!!!",
-            "??", "???", "?!?", "!?!", "?!?!", "!?!?"
-        };
-
+        /// <summary>
+        /// Negations
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public static readonly string[] Negate =
         {
             "aint", "arent", "cannot", "cant", "couldnt", "darent", "didnt", "doesnt",
-             "ain't", "aren't", "can't", "couldn't", "daren't", "didn't", "doesn't",
-             "dont", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt", "neither",
-             "don't", "hadn't", "hasn't", "haven't", "isn't", "mightn't", "mustn't",
-             "neednt", "needn't", "never", "none", "nope", "nor", "not", "nothing", "nowhere",
-             "oughtnt", "shant", "shouldnt", "uhuh", "wasnt", "werent",
-             "oughtn't", "shan't", "shouldn't", "uh-uh", "wasn't", "weren't",
-             "without", "wont", "wouldnt", "won't", "wouldn't", "rarely", "seldom", "despite"
+            "ain't", "aren't", "can't", "couldn't", "daren't", "didn't", "doesn't",
+            "dont", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt", "neither",
+            "don't", "hadn't", "hasn't", "haven't", "isn't", "mightn't", "mustn't",
+            "neednt", "needn't", "never", "none", "nope", "nor", "not", "nothing", "nowhere",
+            "oughtnt", "shant", "shouldnt", "uhuh", "wasnt", "werent",
+            "oughtn't", "shan't", "shouldn't", "uh-uh", "wasn't", "weren't",
+            "without", "wont", "wouldnt", "won't", "wouldn't", "rarely", "seldom", "despite"
         };
 
+        /// <summary>
+        /// Booster/dampener 'intensifiers' or 'degree adverbs'.
+        /// <see cref="http://en.wiktionary.org/wiki/Category:English_degree_adverbs"/>
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public static readonly Dictionary<string, double> BoosterDict = new Dictionary<string, double>
         {
+            // Incr
             { "absolutely", BIncr }, { "amazingly", BIncr }, { "awfully", BIncr },
             { "completely", BIncr }, { "considerable", BIncr }, { "considerably", BIncr },
             { "decidedly", BIncr }, { "deeply", BIncr }, { "effing", BIncr }, { "enormous", BIncr }, { "enormously", BIncr },
@@ -51,6 +76,7 @@ namespace VaderSharp2
             { "uber", BIncr }, { "unbelievably", BIncr }, { "unusually", BIncr }, { "utter", BIncr }, { "utterly", BIncr },
             { "very", BIncr },
 
+            // Decr
             { "almost", BDecr }, { "barely", BDecr }, { "hardly", BDecr }, { "just enough", BDecr },
             { "kind of", BDecr }, { "kinda", BDecr }, { "kindof", BDecr }, { "kind-of", BDecr },
             { "less", BDecr }, { "little", BDecr }, { "marginal", BDecr }, { "marginally", BDecr },
@@ -59,44 +85,46 @@ namespace VaderSharp2
             { "sort of", BDecr }, { "sorta", BDecr }, { "sortof", BDecr }, { "sort-of", BDecr }
         };
 
-        // check for special case idioms and phrases containing lexicon words
-        public static readonly Dictionary<string, double> SpecialCase = new Dictionary<string, double>
+        /// <summary>
+        /// Check for special case idioms and phrases containing lexicon words.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
+        public static readonly Dictionary<string, double> SpecialCases = new Dictionary<string, double>
         {
             { "the shit", 3 },
             { "the bomb", 3 },
             { "bad ass", 1.5 },
             { "badass", 1.5 },
-            { "bus stop", 0 },
+            { "bus stop", 0.0 },
             { "yeah right", -2 },
-            { "cut the mustard", 2 },
             { "kiss of death", -1.5 },
             { "to die for", 3 },
             { "beating heart", 3.1 },
             { "broken heart", -2.9 },
-            { "hand to mouth", -2 }
         };
         #endregion
 
         #region Util static methods
         /// <summary>
-        /// Determine if input contains negation words
+        /// Determine if input contains negation words.
         /// </summary>
-        /// <param name="inputWords"></param>
-        /// <param name="includenT"></param>
-        /// <returns></returns>
-        public static bool Negated(IList<string> inputWords, bool includenT = true)
+        /// <remarks>Checked as of 01/02/2022</remarks>
+        public static bool Negated(IList<string> inputWords, bool includeNt = true)
         {
+            inputWords = inputWords.Select(w => w.ToLower()).ToList();
             foreach (var word in Negate)
             {
                 if (inputWords.Contains(word))
+                {
                     return true;
+                }
             }
 
-            if (includenT)
+            if (includeNt)
             {
                 foreach (var word in inputWords)
                 {
-                    if (word.Contains(@"n't"))
+                    if (word.Contains("n't"))
                     {
                         return true;
                     }
@@ -118,28 +146,32 @@ namespace VaderSharp2
         }
 
         /// <summary>
-        /// Normalizes score to be between -1 and 1
+        /// Normalize the score to be between -1 and 1 using an alpha that
+        /// approximates the max expected value.
         /// </summary>
-        /// <param name="score"></param>
-        /// <param name="alpha"></param>
-        /// <returns></returns>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public static double Normalize(double score, double alpha = 15)
         {
-            double normScore = score / Math.Sqrt(score * score + alpha);
+            double normScore = score / Math.Sqrt((score * score) + alpha);
 
             if (normScore < -1.0)
             {
                 return -1.0;
             }
+            else if (normScore > 1.0)
+            {
+                return 1.0;
+            }
 
-            return normScore > 1.0 ? 1.0 : normScore;
+            return normScore;
         }
 
         /// <summary>
-        /// Checks whether some but not all of words in input are ALL CAPS
+        /// Checks whether some but not all of words in input are ALL CAPS.
         /// </summary>
-        /// <param name="words"></param>
-        /// <returns></returns>
+        /// <param name="words">The words to inspect.</param>
+        /// <returns>`True` if some but not all items in `words` are ALL CAPS.</returns>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public static bool AllCapDifferential(IList<string> words)
         {
             int allCapWords = 0;
@@ -153,16 +185,13 @@ namespace VaderSharp2
             }
 
             int capDifferential = words.Count - allCapWords;
-            return (capDifferential > 0 && capDifferential < words.Count);
+            return capDifferential > 0 && capDifferential < words.Count;
         }
 
         /// <summary>
-        /// Check if preceding words increase, decrease or negate the valence
+        /// Check if preceding words increase, decrease or negate the valence.
         /// </summary>
-        /// <param name="word"></param>
-        /// <param name="valence"></param>
-        /// <param name="isCapDiff"></param>
-        /// <returns></returns>
+        /// <remarks>Checked as of 01/02/2022</remarks>
         public static double ScalarIncDec(string word, double valence, bool isCapDiff)
         {
             string wordLower = word.ToLower();
@@ -177,9 +206,17 @@ namespace VaderSharp2
                 scalar *= -1;
             }
 
+            // Check if booster/dampener word is in ALLCAPS (while others aren't)
             if (word.IsUpper() && isCapDiff)
             {
-                scalar += (valence > 0) ? CIncr : -CIncr;
+                if (valence > 0)
+                {
+                    scalar += CIncr;
+                }
+                else
+                {
+                    scalar -= CIncr;
+                }
             }
 
             return scalar;

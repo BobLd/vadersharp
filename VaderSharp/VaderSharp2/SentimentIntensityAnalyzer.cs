@@ -16,61 +16,97 @@ namespace VaderSharp2
         private const double QuesIncrSmall = 0.18;
         private const double QuesIncrLarge = 0.96;
 
-        private readonly Dictionary<string, double> Lexicon = null;
-        private readonly string[] LexiconFullFile = null;
+        private readonly Dictionary<string, double> Lexicon;
+        private readonly string[] LexiconFullFile;
+
+        private readonly Dictionary<string, string> Emojis;
+        private readonly string[] EmojiFullFile;
 
         public SentimentIntensityAnalyzer()
         {
-            if (Lexicon == null)
-            {
-                Assembly assembly = typeof(SentimentIntensityAnalyzer).GetTypeInfo().Assembly;
+            Assembly assembly = typeof(SentimentIntensityAnalyzer).GetTypeInfo().Assembly;
 
-                using (var stream = assembly.GetManifestResourceStream("VaderSharp2.vader_lexicon.txt"))
-                using (var reader = new StreamReader(stream))
-                {
-                    LexiconFullFile = reader.ReadToEnd().Split('\n');
-                    Lexicon = MakeLexDic();
-                }
+            using (var stream = assembly.GetManifestResourceStream("VaderSharp2.vader_lexicon.txt"))
+            using (var reader = new StreamReader(stream))
+            {
+                LexiconFullFile = reader.ReadToEnd().Split('\n');
+                Lexicon = MakeLexDic();
+            }
+
+            using (var stream = assembly.GetManifestResourceStream("VaderSharp2.emoji_utf8_lexicon.txt"))
+            using (var reader = new StreamReader(stream))
+            {
+                EmojiFullFile = reader.ReadToEnd().Split('\n');
+                Emojis = MakeEmojiDic();
             }
         }
 
-        public SentimentIntensityAnalyzer(string fileName)
+        public SentimentIntensityAnalyzer(string lexiconFile, string emojiLexicon)
         {
             if (Lexicon == null)
             {
-                if (!File.Exists(fileName))
+                if (!File.Exists(lexiconFile))
                 {
                     throw new Exception("Lexicon file not found");
                 }
 
-                using (var stream = new FileStream(fileName, FileMode.Open))
+                using (var stream = new FileStream(lexiconFile, FileMode.Open))
                 using (var reader = new StreamReader(stream))
                 {
                     LexiconFullFile = reader.ReadToEnd().Split('\n');
                     Lexicon = MakeLexDic();
                 }
             }
-        }
 
-        private Dictionary<string, double> MakeLexDic()
-        {
-            var dic = new Dictionary<string, double>();
-            foreach (var line in LexiconFullFile)
-            {
-                var lineArray = line.Trim().Split('\t');
-                dic.Add(lineArray[0], double.Parse(lineArray[1], CultureInfo.InvariantCulture));
-            }
-            return dic;
+            throw new NotImplementedException("emojiLexicon");
         }
 
         /// <summary>
-        /// Return metrics for positive, negative and neutral sentiment based on the input text.
+        /// Convert lexicon file to a dictionary.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public SentimentAnalysisResults PolarityScores(string input)
+        /// <remarks>Checked as of 01/02/2022</remarks>
+        private Dictionary<string, double> MakeLexDic()
         {
-            var sentiText = new SentiText(input);
+            var lexDict = new Dictionary<string, double>();
+            foreach (var line in LexiconFullFile)
+            {
+                var lineArray = line.Trim().Split('\t');
+                lexDict.Add(lineArray[0], double.Parse(lineArray[1], CultureInfo.InvariantCulture));
+            }
+            return lexDict;
+        }
+
+        /// <summary>
+        /// Convert emoji lexicon file to a dictionary.
+        /// </summary>
+        /// <remarks>Checked as of 01/02/2022</remarks>
+        private Dictionary<string, string> MakeEmojiDic()
+        {
+            var emoji_dict = new Dictionary<string, string>();
+            foreach (var line in EmojiFullFile)
+            {
+                var lineArray = line.Trim().Split('\t');
+                string emoji = lineArray[0]; // emoji should be a char
+                emoji_dict.Add(emoji, lineArray[1]);
+            }
+            return emoji_dict;
+        }
+
+        /// <summary>
+        /// <para>Return a float for sentiment strength based on the input text.</para>
+        /// <para>Positive values are positive valence, negative value are negative valence.</para>
+        /// </summary>
+        public SentimentAnalysisResults PolarityScores(string text)
+        {
+            // convert emojis to their textual descriptions
+            foreach (var em in Emojis.Where(kvp => text.Contains(kvp.Key)))
+            {
+                text = text.Replace(em.Key, em.Value);
+            }
+
+            text = text.Trim();
+
+            var sentiText = new SentiText(text);
             IList<double> sentiments = new List<double>();
             IList<string> wordsAndEmoticons = sentiText.WordsAndEmoticons;
 
@@ -89,7 +125,7 @@ namespace VaderSharp2
 
             sentiments = ButCheck(wordsAndEmoticons, sentiments);
 
-            return ScoreValence(sentiments, input);
+            return ScoreValence(sentiments, text);
         }
 
         private IList<double> SentimentValence(double valence, SentiText sentiText, string item, int i, IList<double> sentiments)
@@ -149,11 +185,11 @@ namespace VaderSharp2
 
                     valence += s;
 
-                    valence = NeverCheck(valence, wordsAndEmoticons, startI, i);
+                    valence = NegationCheck(valence, wordsAndEmoticons, startI, i);
 
                     if (startI == 2)
                     {
-                        valence = IdiomsCheck(valence, wordsAndEmoticons, i);
+                        valence = SpecialIdiomsCheck(valence, wordsAndEmoticons, i);
                     }
                 }
             }
@@ -163,29 +199,31 @@ namespace VaderSharp2
             return sentiments;
         }
 
+        /// <summary>
+        /// check for modification in sentiment due to contrastive conjunction 'but'
+        /// </summary>
         private static IList<double> ButCheck(IList<string> wordsAndEmoticons, IList<double> sentiments)
         {
-            bool containsBUT = wordsAndEmoticons.Contains("BUT");
-            bool containsbut = wordsAndEmoticons.Contains("but");
-            if (!containsBUT && !containsbut)
-                return sentiments;
-
-            int butIndex = (containsBUT)
-                ? wordsAndEmoticons.IndexOf("BUT")
-                : wordsAndEmoticons.IndexOf("but");
-
-            for (int i = 0; i < sentiments.Count; i++)
+            var wordsAndEmoticonsLower = wordsAndEmoticons.Select(w => w.ToLower()).ToList();
+            if (!wordsAndEmoticonsLower.Contains("but"))
             {
-                double sentiment = sentiments[i];
-                if (i < butIndex)
+                return sentiments;
+            }
+
+            int bi = wordsAndEmoticonsLower.IndexOf("but");
+
+            for (int si = 0; si < sentiments.Count; si++)
+            {
+                double sentiment = sentiments[si];
+                if (si < bi)
                 {
-                    sentiments.RemoveAt(i);
-                    sentiments.Insert(i, sentiment * 0.5);
+                    sentiments.RemoveAt(si);
+                    sentiments.Insert(si, sentiment * 0.5);
                 }
-                else if (i > butIndex)
+                else if (si > bi)
                 {
-                    sentiments.RemoveAt(i);
-                    sentiments.Insert(i, sentiment * 1.5);
+                    sentiments.RemoveAt(si);
+                    sentiments.Insert(si, sentiment * 1.5);
                 }
             }
             return sentiments;
@@ -202,7 +240,7 @@ namespace VaderSharp2
                 }
             }
             else if (i > 0 && !Lexicon.ContainsKey(wordsAndEmoticons[i - 1].ToLower())
-                && wordsAndEmoticons[i - 1].ToLower() == "least")
+                     && wordsAndEmoticons[i - 1].ToLower() == "least")
             {
                 valence *= SentimentUtils.NScalar;
             }
@@ -210,37 +248,41 @@ namespace VaderSharp2
             return valence;
         }
 
-        private static double NeverCheck(double valence, IList<string> wordsAndEmoticons, int startI, int i)
+        private static double NegationCheck(double valence, IList<string> wordsAndEmoticons, int startI, int i)
         {
+            var wordsAndEmoticonsLower = wordsAndEmoticons.Select(x => x.ToLower()).ToList();
             if (startI == 0)
             {
-                if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - 1].ToLower() }))
+                if (SentimentUtils.Negated(new List<string> { wordsAndEmoticonsLower[i - 1] }))
                 {
+                    // 1 word preceding lexicon word (w/o stopwords)
                     valence *= SentimentUtils.NScalar;
                 }
             }
             else if (startI == 1)
             {
-                if (wordsAndEmoticons[i - 2] == "never" &&
-                    (wordsAndEmoticons[i - 1] == "so" || wordsAndEmoticons[i - 1] == "this"))
+                if (wordsAndEmoticonsLower[i - 2] == "never" &&
+                    (wordsAndEmoticonsLower[i - 1] == "so" || wordsAndEmoticonsLower[i - 1] == "this"))
                 {
-                    valence *= 1.5;
+                    valence *= 1.25;
                 }
-                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)].ToLower() }))
+                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticonsLower[i - (startI + 1)] }))
                 {
+                    // 2 words preceding the lexicon word position
                     valence *= SentimentUtils.NScalar;
                 }
             }
             else if (startI == 2)
             {
-                if (wordsAndEmoticons[i - 3] == "never"
-                    && (wordsAndEmoticons[i - 2] == "so" || wordsAndEmoticons[i - 2] == "this")
-                    || (wordsAndEmoticons[i - 1] == "so" || wordsAndEmoticons[i - 1] == "this"))
+                if (wordsAndEmoticonsLower[i - 3] == "never"
+                && (wordsAndEmoticonsLower[i - 2] == "so" || wordsAndEmoticonsLower[i - 2] == "this")
+                || (wordsAndEmoticonsLower[i - 1] == "so" || wordsAndEmoticonsLower[i - 1] == "this"))
                 {
                     valence *= 1.25;
                 }
-                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticons[i - (startI + 1)].ToLower() }))
+                else if (SentimentUtils.Negated(new List<string> { wordsAndEmoticonsLower[i - (startI + 1)] }))
                 {
+                    // 3 words preceding the lexicon word position
                     valence *= SentimentUtils.NScalar;
                 }
             }
@@ -248,46 +290,53 @@ namespace VaderSharp2
             return valence;
         }
 
-        private static double IdiomsCheck(double valence, IList<string> wordsAndEmoticons, int i)
+        private static double SpecialIdiomsCheck(double valence, IList<string> wordsAndEmoticons, int i)
         {
-            var oneZero = string.Concat(wordsAndEmoticons[i - 1], " ", wordsAndEmoticons[i]);
-            var twoOneZero = string.Concat(wordsAndEmoticons[i - 2], " ", wordsAndEmoticons[i - 1], " ", wordsAndEmoticons[i]);
-            var twoOne = string.Concat(wordsAndEmoticons[i - 2], " ", wordsAndEmoticons[i - 1]);
-            var threeTwoOne = string.Concat(wordsAndEmoticons[i - 3], " ", wordsAndEmoticons[i - 2], " ", wordsAndEmoticons[i - 1]);
-            var threeTwo = string.Concat(wordsAndEmoticons[i - 3], " ", wordsAndEmoticons[i - 2]);
+            var wordsAndEmoticonsLower = wordsAndEmoticons.Select(x => x.ToLower()).ToList();
+
+            var oneZero = string.Concat(wordsAndEmoticonsLower[i - 1], " ", wordsAndEmoticonsLower[i]);
+            var twoOneZero = string.Concat(wordsAndEmoticonsLower[i - 2], " ", wordsAndEmoticonsLower[i - 1], " ", wordsAndEmoticonsLower[i]);
+            var twoOne = string.Concat(wordsAndEmoticonsLower[i - 2], " ", wordsAndEmoticonsLower[i - 1]);
+            var threeTwoOne = string.Concat(wordsAndEmoticonsLower[i - 3], " ", wordsAndEmoticonsLower[i - 2], " ", wordsAndEmoticonsLower[i - 1]);
+            var threeTwo = string.Concat(wordsAndEmoticonsLower[i - 3], " ", wordsAndEmoticonsLower[i - 2]);
 
             string[] sequences = { oneZero, twoOneZero, twoOne, threeTwoOne, threeTwo };
 
             foreach (var seq in sequences)
             {
-                if (SentimentUtils.SpecialCase.ContainsKey(seq))
+                if (SentimentUtils.SpecialCases.ContainsKey(seq))
                 {
-                    valence = SentimentUtils.SpecialCase[seq];
+                    valence = SentimentUtils.SpecialCases[seq];
                     break;
                 }
             }
 
-            if (wordsAndEmoticons.Count - 1 > i)
+            if (wordsAndEmoticonsLower.Count - 1 > i)
             {
-                string zeroOne = string.Concat(wordsAndEmoticons[i], " ", wordsAndEmoticons[i + 1]);
-                if (SentimentUtils.SpecialCase.ContainsKey(zeroOne))
+                string zeroOne = string.Concat(wordsAndEmoticonsLower[i], " ", wordsAndEmoticonsLower[i + 1]);
+                if (SentimentUtils.SpecialCases.ContainsKey(zeroOne))
                 {
-                    valence = SentimentUtils.SpecialCase[zeroOne];
+                    valence = SentimentUtils.SpecialCases[zeroOne];
                 }
             }
 
-            if (wordsAndEmoticons.Count - 1 > i + 1)
+            if (wordsAndEmoticonsLower.Count - 1 > i + 1)
             {
-                string zeroOneTwo = string.Concat(wordsAndEmoticons[i], " ", wordsAndEmoticons[i + 1], " ", wordsAndEmoticons[i + 2]);
-                if (SentimentUtils.SpecialCase.ContainsKey(zeroOneTwo))
+                string zeroOneTwo = string.Concat(wordsAndEmoticonsLower[i], " ", wordsAndEmoticonsLower[i + 1], " ", wordsAndEmoticonsLower[i + 2]);
+                if (SentimentUtils.SpecialCases.ContainsKey(zeroOneTwo))
                 {
-                    valence = SentimentUtils.SpecialCase[zeroOneTwo];
+                    valence = SentimentUtils.SpecialCases[zeroOneTwo];
                 }
             }
 
-            if (SentimentUtils.BoosterDict.ContainsKey(threeTwo) || SentimentUtils.BoosterDict.ContainsKey(twoOne))
+            // check for booster/dampener bi-grams such as 'sort of' or 'kind of'
+            var nGrams = new[] { threeTwoOne, threeTwo, twoOne };
+            foreach (var nGram in nGrams)
             {
-                valence += SentimentUtils.BDecr;
+                if (SentimentUtils.BoosterDict.ContainsKey(nGram))
+                {
+                    valence += SentimentUtils.BoosterDict[nGram];
+                }
             }
             return valence;
         }
@@ -297,6 +346,9 @@ namespace VaderSharp2
             return AmplifyExclamation(text) + AmplifyQuestion(text);
         }
 
+        /// <summary>
+        /// Check for added emphasis resulting from exclamation points (up to 4 of them).
+        /// </summary>
         private static double AmplifyExclamation(string text)
         {
             int epCount = text.Count(x => x == '!');
@@ -306,9 +358,13 @@ namespace VaderSharp2
                 epCount = 4;
             }
 
+            // (empirically derived mean sentiment intensity rating increase for exclamation points)
             return epCount * ExclIncr;
         }
 
+        /// <summary>
+        /// Check for added emphasis resulting from question marks (2 or 3+).
+        /// </summary>
         private static double AmplifyQuestion(string text)
         {
             int qmCount = text.Count(x => x == '?');
@@ -318,9 +374,13 @@ namespace VaderSharp2
                 return 0;
             }
 
+            // (empirically derived mean sentiment intensity rating increase for question marks)
             return qmCount <= 3 ? qmCount * QuesIncrSmall : QuesIncrLarge;
         }
 
+        /// <summary>
+        /// Want separate positive versus negative sentiment scores.
+        /// </summary>
         private static SiftSentiments SiftSentimentScores(IList<double> sentiments)
         {
             var siftSentiments = new SiftSentiments();
@@ -329,11 +389,11 @@ namespace VaderSharp2
             {
                 if (sentiment > 0)
                 {
-                    siftSentiments.PosSum += (sentiment + 1); // 1 compensates for neutrals
+                    siftSentiments.PosSum += (sentiment + 1); // compensates for neutral words that are counted as 1
                 }
                 else if (sentiment < 0)
                 {
-                    siftSentiments.NegSum += (sentiment - 1);
+                    siftSentiments.NegSum += (sentiment - 1); // when used with math.fabs(), compensates for neutrals
                 }
                 else if (sentiment == 0)
                 {

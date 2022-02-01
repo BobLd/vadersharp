@@ -6,6 +6,20 @@ namespace VaderSharp2.Tests
     public class SentimentTest
     {
         [Fact]
+        public void VeryCleanNoProblem()
+        {
+            // https://github.com/cjhutto/vaderSentiment/issues/121
+            var analyzer = new SentimentIntensityAnalyzer();
+
+            // Very clean, no problem
+            var veryCleanTest = analyzer.PolarityScores("Very clean, no problem");
+            Assert.Equal(0, veryCleanTest.Negative);
+            Assert.Equal(0.128, veryCleanTest.Neutral);
+            Assert.Equal(0.872, veryCleanTest.Positive);
+            Assert.Equal(0.6997, veryCleanTest.Compound);
+        }
+
+        [Fact]
         public void UpperCaseTest()
         {
             // https://github.com/codingupastorm/vadersharp/issues/18

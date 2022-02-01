@@ -3,7 +3,7 @@
     /// <summary>
     /// A model to represent the result of analysis.
     /// </summary>
-    public class SentimentAnalysisResults
+    public struct SentimentAnalysisResults
     {
         /// <summary>
         /// The proportion of words in the sentence with negative valence.
@@ -41,6 +41,21 @@
         public override int GetHashCode()
         {
             return System.HashCode.Combine(Negative, Neutral, Positive, Compound);
+        }
+
+        public override string ToString()
+        {
+            return $"Neg: {Negative}, Neu: {Neutral}, Pos: {Positive}, Compound: {Compound}";
+        }
+
+        public static bool operator ==(SentimentAnalysisResults left, SentimentAnalysisResults right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(SentimentAnalysisResults left, SentimentAnalysisResults right)
+        {
+            return !(left == right);
         }
     }
 }
