@@ -99,7 +99,8 @@ namespace VaderSharp2
             { "sort-of", BDecr}
         };
 
-        public static readonly Dictionary<string, double> SpecialCaseIdioms = new Dictionary<string, double>
+        // check for special case idioms and phrases containing lexicon words
+        public static readonly Dictionary<string, double> SpecialCase = new Dictionary<string, double>
         {
             { "the shit", 3 },
             { "the bomb", 3 },

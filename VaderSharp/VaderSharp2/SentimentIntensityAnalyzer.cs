@@ -243,9 +243,9 @@ namespace VaderSharp2
 
             foreach (var seq in sequences)
             {
-                if (SentimentUtils.SpecialCaseIdioms.ContainsKey(seq))
+                if (SentimentUtils.SpecialCase.ContainsKey(seq))
                 {
-                    valence = SentimentUtils.SpecialCaseIdioms[seq];
+                    valence = SentimentUtils.SpecialCase[seq];
                     break;
                 }
             }
@@ -253,18 +253,18 @@ namespace VaderSharp2
             if (wordsAndEmoticons.Count - 1 > i)
             {
                 string zeroOne = string.Concat(wordsAndEmoticons[i], " ", wordsAndEmoticons[i + 1]);
-                if (SentimentUtils.SpecialCaseIdioms.ContainsKey(zeroOne))
+                if (SentimentUtils.SpecialCase.ContainsKey(zeroOne))
                 {
-                    valence = SentimentUtils.SpecialCaseIdioms[zeroOne];
+                    valence = SentimentUtils.SpecialCase[zeroOne];
                 }
             }
 
             if (wordsAndEmoticons.Count - 1 > i + 1)
             {
                 string zeroOneTwo = string.Concat(wordsAndEmoticons[i], " ", wordsAndEmoticons[i + 1], " ", wordsAndEmoticons[i + 2]);
-                if (SentimentUtils.SpecialCaseIdioms.ContainsKey(zeroOneTwo))
+                if (SentimentUtils.SpecialCase.ContainsKey(zeroOneTwo))
                 {
-                    valence = SentimentUtils.SpecialCaseIdioms[zeroOneTwo];
+                    valence = SentimentUtils.SpecialCase[zeroOneTwo];
                 }
             }
 
