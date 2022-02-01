@@ -143,6 +143,7 @@ namespace VaderSharp2
                 }
             }
 
+            /*
             if (inputWords.Contains("least"))
             {
                 int i = inputWords.IndexOf("least");
@@ -151,6 +152,7 @@ namespace VaderSharp2
                     return true;
                 }
             }
+            */
 
             return false;
         }

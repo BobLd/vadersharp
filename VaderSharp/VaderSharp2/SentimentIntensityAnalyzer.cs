@@ -95,7 +95,7 @@ namespace VaderSharp2
         private IList<double> SentimentValence(double valence, SentiText sentiText, string item, int i, IList<double> sentiments)
         {
             string itemLowerCase = item.ToLower();
-            if (!Lexicon.ContainsKey(itemLowerCase))
+            if (!Lexicon.ContainsKey(itemLowerCase)) // not in lexicon
             {
                 sentiments.Add(valence);
                 return sentiments;
@@ -103,7 +103,22 @@ namespace VaderSharp2
 
             bool isCapDiff = sentiText.IsCapDifferential;
             IList<string> wordsAndEmoticons = sentiText.WordsAndEmoticons;
+
+            // Get the sentiment valence 
             valence = Lexicon[itemLowerCase];
+
+            // check for "no" as negation for an adjacent lexicon item vs "no" as its own stand-alone lexicon item
+            if (itemLowerCase == "no" && Lexicon.ContainsKey(wordsAndEmoticons[i + 1].ToLower()))
+            {
+                // don't use valence of "no" as a lexicon item. Instead set it's valence to 0.0 and negate the next item
+                valence = 0;
+            }
+
+            if (i > 0 && wordsAndEmoticons[i - 1].ToLower() == "no" && Lexicon.ContainsKey(itemLowerCase))
+            {
+                valence = Lexicon[itemLowerCase] * SentimentUtils.NScalar;
+            }
+
             if (isCapDiff && item.IsUpper())
             {
                 if (valence > 0)
