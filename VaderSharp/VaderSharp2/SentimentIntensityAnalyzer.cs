@@ -108,7 +108,7 @@ namespace VaderSharp2
             valence = Lexicon[itemLowerCase];
 
             // check for "no" as negation for an adjacent lexicon item vs "no" as its own stand-alone lexicon item
-            if (itemLowerCase == "no" && Lexicon.ContainsKey(wordsAndEmoticons[i + 1].ToLower()))
+            if (itemLowerCase == "no" && i != wordsAndEmoticons.Count - 1 && Lexicon.ContainsKey(wordsAndEmoticons[i + 1].ToLower()))
             {
                 // don't use valence of "no" as a lexicon item. Instead set it's valence to 0.0 and negate the next item
                 valence = 0;
