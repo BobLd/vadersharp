@@ -125,8 +125,7 @@ namespace VaderSharp2
                     {
                         s *= 0.95;
                     }
-
-                    if (startI == 2 && s != 0)
+                    else if (startI == 2 && s != 0)
                     {
                         s *= 0.9;
                     }
@@ -139,7 +138,6 @@ namespace VaderSharp2
                     {
                         valence = IdiomsCheck(valence, wordsAndEmoticons, i);
                     }
-
                 }
             }
 
@@ -260,6 +258,7 @@ namespace VaderSharp2
                     valence = SentimentUtils.SpecialCaseIdioms[zeroOne];
                 }
             }
+
             if (wordsAndEmoticons.Count - 1 > i + 1)
             {
                 string zeroOneTwo = string.Concat(wordsAndEmoticons[i], " ", wordsAndEmoticons[i + 1], " ", wordsAndEmoticons[i + 2]);
@@ -268,6 +267,7 @@ namespace VaderSharp2
                     valence = SentimentUtils.SpecialCaseIdioms[zeroOneTwo];
                 }
             }
+
             if (SentimentUtils.BoosterDict.ContainsKey(threeTwo) || SentimentUtils.BoosterDict.ContainsKey(twoOne))
             {
                 valence += SentimentUtils.BDecr;
@@ -314,13 +314,11 @@ namespace VaderSharp2
                 {
                     siftSentiments.PosSum += (sentiment + 1); // 1 compensates for neutrals
                 }
-
-                if (sentiment < 0)
+                else if (sentiment < 0)
                 {
                     siftSentiments.NegSum += (sentiment - 1);
                 }
-
-                if (sentiment == 0)
+                else if (sentiment == 0)
                 {
                     siftSentiments.NeuCount++;
                 }
