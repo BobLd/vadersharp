@@ -101,13 +101,18 @@ namespace VaderSharp2
 
         public static readonly Dictionary<string, double> SpecialCaseIdioms = new Dictionary<string, double>
         {
-            { "the shit", 3},
-            { "the bomb", 3},
-            { "bad ass", 1.5},
-            { "yeah right", -2},
-            { "cut the mustard", 2},
-            { "kiss of death", -1.5},
-            { "hand to mouth", -2}
+            { "the shit", 3 },
+            { "the bomb", 3 },
+            { "bad ass", 1.5 },
+            { "badass", 1.5 },
+            { "bus stop", 0 },
+            { "yeah right", -2 },
+            { "cut the mustard", 2 },
+            { "kiss of death", -1.5 },
+            { "to die for", 3 },
+            { "beating heart", 3.1 },
+            { "broken heart", -2.9 },
+            { "hand to mouth", -2 }
         };
         #endregion
 

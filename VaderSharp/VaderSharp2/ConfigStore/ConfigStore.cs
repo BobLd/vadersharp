@@ -6,13 +6,11 @@ using System.Xml.Linq;
 namespace VaderSharp2
 {
     /// <summary>
-    /// Proof of concept for loading the words to be used as boosters, negations etc.
-    /// 
-    /// Currently not used.
+    /// <para>Proof of concept for loading the words to be used as boosters, negations etc.</para>
+    /// <para>Currently not used.</para>
     /// </summary>
     public class ConfigStore
     {
-
         private static ConfigStore config;
 
         public Dictionary<string, double> BoosterDict { get; private set; }
