@@ -114,7 +114,9 @@ namespace VaderSharp2
                 valence = 0;
             }
 
-            if (i > 0 && wordsAndEmoticons[i - 1].ToLower() == "no" && Lexicon.ContainsKey(itemLowerCase))
+            if ((i > 0 && wordsAndEmoticons[i - 1].ToLower() == "no")
+             || (i > 1 && wordsAndEmoticons[i - 2].ToLower() == "no")
+             || (i > 2 && wordsAndEmoticons[i - 3].ToLower() == "no" && new[] { "or", "nor" }.Contains(wordsAndEmoticons[i - 1].ToLower())))
             {
                 valence = Lexicon[itemLowerCase] * SentimentUtils.NScalar;
             }
