@@ -6,8 +6,11 @@ namespace VaderSharp2
     internal static class SentimentUtils
     {
         #region Constants
+        // (empirically derived mean sentiment intensity rating increase for booster words)
         public const double BIncr = 0.293;
         public const double BDecr = -0.293;
+
+        // (empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word)
         public const double CIncr = 0.733;
         public const double NScalar = -0.74;
 
@@ -20,83 +23,40 @@ namespace VaderSharp2
         public static readonly string[] Negate =
         {
             "aint", "arent", "cannot", "cant", "couldnt", "darent", "didnt", "doesnt",
-            "ain't", "aren't", "can't", "couldn't", "daren't", "didn't", "doesn't",
-            "dont", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt", "neither",
-            "don't", "hadn't", "hasn't", "haven't", "isn't", "mightn't", "mustn't",
-            "neednt", "needn't", "never", "none", "nope", "nor", "not", "nothing", "nowhere",
-            "oughtnt", "shant", "shouldnt", "uhuh", "wasnt", "werent",
-            "oughtn't", "shan't", "shouldn't", "uh-uh", "wasn't", "weren't",
-            "without", "wont", "wouldnt", "won't", "wouldn't", "rarely", "seldom", "despite"
+             "ain't", "aren't", "can't", "couldn't", "daren't", "didn't", "doesn't",
+             "dont", "hadnt", "hasnt", "havent", "isnt", "mightnt", "mustnt", "neither",
+             "don't", "hadn't", "hasn't", "haven't", "isn't", "mightn't", "mustn't",
+             "neednt", "needn't", "never", "none", "nope", "nor", "not", "nothing", "nowhere",
+             "oughtnt", "shant", "shouldnt", "uhuh", "wasnt", "werent",
+             "oughtn't", "shan't", "shouldn't", "uh-uh", "wasn't", "weren't",
+             "without", "wont", "wouldnt", "won't", "wouldn't", "rarely", "seldom", "despite"
         };
 
         public static readonly Dictionary<string, double> BoosterDict = new Dictionary<string, double>
         {
-            { "absolutely", BIncr},
-            { "amazingly", BIncr},
-            { "awfully", BIncr},
-            { "completely", BIncr},
-            { "considerably", BIncr},
-            { "decidedly", BIncr},
-            { "deeply", BIncr},
-            { "effing", BIncr},
-            { "enormously", BIncr},
-            { "entirely", BIncr},
-            { "especially", BIncr},
-            { "exceptionally", BIncr},
-            { "extremely", BIncr},
-            { "fabulously", BIncr},
-            { "flipping", BIncr },
-            { "flippin", BIncr},
-            { "fricking", BIncr},
-            { "frickin", BIncr},
-            { "frigging", BIncr},
-            { "friggin", BIncr},
-            { "fully", BIncr},
-            { "fucking", BIncr},
-            { "greatly", BIncr},
-            { "hella", BIncr},
-            { "highly", BIncr},
-            { "hugely", BIncr},
-            { "incredibly", BIncr},
-            { "intensely", BIncr},
-            { "majorly", BIncr},
-            { "more", BIncr},
-            { "most", BIncr},
-            { "particularly", BIncr},
-            { "purely", BIncr},
-            { "quite", BIncr},
-            { "really", BIncr},
-            { "remarkably", BIncr},
-            { "so", BIncr},
-            { "substantially", BIncr},
-            { "thoroughly", BIncr},
-            { "totally", BIncr},
-            { "tremendously", BIncr},
-            { "uber", BIncr},
-            { "unbelievably", BIncr},
-            { "unusually", BIncr},
-            { "utterly", BIncr},
-            { "very", BIncr},
-            { "almost", BDecr},
-            { "barely", BDecr},
-            { "hardly", BDecr},
-            { "just enough", BDecr},
-            { "kind of", BDecr},
-            { "kinda", BDecr},
-            { "kindof", BDecr},
-            { "kind-of", BDecr},
-            { "less", BDecr},
-            { "little", BDecr},
-            { "marginally", BDecr},
-            { "occasionally", BDecr},
-            { "partly", BDecr},
-            { "scarcely", BDecr},
-            { "slightly", BDecr},
-            { "somewhat", BDecr},
-            { "sort of", BDecr},
-            { "sorta", BDecr},
-            { "sortof", BDecr},
-            { "sort-of", BDecr}
+            { "absolutely", BIncr }, { "amazingly", BIncr }, { "awfully", BIncr },
+            { "completely", BIncr }, { "considerable", BIncr }, { "considerably", BIncr },
+            { "decidedly", BIncr }, { "deeply", BIncr }, { "effing", BIncr }, { "enormous", BIncr }, { "enormously", BIncr },
+            { "entirely", BIncr },{ "especially", BIncr }, { "exceptional", BIncr }, { "exceptionally", BIncr },
+            { "extreme", BIncr }, { "extremely", BIncr },
+            { "fabulously", BIncr }, { "flipping", BIncr }, { "flippin", BIncr}, { "frackin", BIncr }, { "fracking", BIncr },
+            { "fricking", BIncr }, { "frickin", BIncr }, { "frigging", BIncr }, { "friggin", BIncr }, { "fully", BIncr },
+            { "fuckin", BIncr }, { "fucking", BIncr }, { "fuggin", BIncr }, { "fugging", BIncr },
+            { "greatly", BIncr }, { "hella", BIncr }, { "highly", BIncr }, { "hugely", BIncr },
+            { "incredible", BIncr }, { "incredibly", BIncr }, { "intensely", BIncr },
+            { "major", BIncr }, { "majorly", BIncr }, { "more", BIncr }, { "most", BIncr }, { "particularly", BIncr },
+            { "purely", BIncr }, { "quite", BIncr }, { "really", BIncr }, { "remarkably", BIncr },
+            { "so", BIncr }, { "substantially", BIncr },
+            { "thoroughly", BIncr }, { "total", BIncr }, { "totally", BIncr }, { "tremendous", BIncr }, { "tremendously", BIncr },
+            { "uber", BIncr }, { "unbelievably", BIncr }, { "unusually", BIncr }, { "utter", BIncr }, { "utterly", BIncr },
+            { "very", BIncr },
+
+            { "almost", BDecr }, { "barely", BDecr }, { "hardly", BDecr }, { "just enough", BDecr },
+            { "kind of", BDecr }, { "kinda", BDecr }, { "kindof", BDecr }, { "kind-of", BDecr },
+            { "less", BDecr }, { "little", BDecr }, { "marginal", BDecr }, { "marginally", BDecr },
+            { "occasional", BDecr }, { "occasionally", BDecr }, { "partly", BDecr },
+            { "scarce", BDecr }, { "scarcely", BDecr }, { "slight", BDecr }, { "slightly", BDecr }, { "somewhat", BDecr },
+            { "sort of", BDecr }, { "sorta", BDecr }, { "sortof", BDecr }, { "sort-of", BDecr }
         };
 
         // check for special case idioms and phrases containing lexicon words
