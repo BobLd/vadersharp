@@ -1,7 +1,9 @@
-# VaderSharp 2 - The best sentiment analysis tool. In C#
+# VaderSharp2 - The best sentiment analysis tool. In C#
 "VADER (Valence Aware Dictionary and sEntiment Reasoner) is a lexicon and rule-based sentiment analysis tool that is specifically attuned to sentiments expressed in social media."
 
-Previously VADER was only available in python (https://github.com/cjhutto/vaderSentiment), and was then ported to C# in https://github.com/codingupastorm/vadersharp (this is a fork from this repos). This fork is an updated version.
+Previously VADER was only available in python (https://github.com/cjhutto/vaderSentiment), and was then ported to C# in https://github.com/codingupastorm/vadersharp (this is a fork from this repos).
+
+VaderSharp2 is an updated version of the original VaderSharp.
 
 [![Linux](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml)
 
@@ -12,9 +14,10 @@ If you use either the dataset or any of the VADER sentiment analysis tools (VADE
 
 ## Changes since [original port](https://github.com/cjhutto/vaderSentiment) to C#
 - Implement emojis
-- Updated to the 3.3.2 Python version
-- C# version now tracks Python version
-- Targets netcoreapp3.1, netcoreapp2.1, net452, net46, net461, net462, net47, net5.0, net6.0
+- Updated to the `3.3.2` Python version
+- C# version now tracks Python versioning
+- Targets `netcoreapp3.1`, `netcoreapp2.1`, `net452`, `net46`, `net461`, `net462`, `net47`, `net5.0`, `net6.0`
+- In-depth testing
 
 **NOTE:** There is a problem with how the [`_but_check`](https://github.com/cjhutto/vaderSentiment/blob/d8da3e21374a57201b557a4c91ac4dc411a08fed/vaderSentiment/vaderSentiment.py#L333-L346) function works in the python version - it uses `sentiments.index(sentiment)` on the double value... This results in unexpected results. This version has the correct behaviour.
 
@@ -27,13 +30,11 @@ Install-Package VaderSharp2
 
 ## Usage
 Import the package at the top of the page:
-
 ```csharp
 using VaderSharp2;
 ```
 
 Then just initialize an instance of SentimentIntensityAnalyzer and call it's PolarityScores method:
-
 ```csharp
 var analyzer = new SentimentIntensityAnalyzer();
 
