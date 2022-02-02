@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using System;
 
 namespace VaderSharp2
 {
@@ -9,7 +10,8 @@ namespace VaderSharp2
     /// <para>Proof of concept for loading the words to be used as boosters, negations etc.</para>
     /// <para>Currently not used.</para>
     /// </summary>
-    public class ConfigStore
+    [Obsolete("Proof of concept. Currently not used.")]
+    internal class ConfigStore
     {
         private static ConfigStore config;
 
