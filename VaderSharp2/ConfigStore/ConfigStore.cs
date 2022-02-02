@@ -44,7 +44,6 @@ namespace VaderSharp2
         /// <param name="languageCode">Language code in writing style "language-country".</param>
         private void LoadConfig(string languageCode)
         {
-#if DEBUG
             string path = Path.GetFullPath($"../../../../VaderSharp2/ConfigStore/strings/{languageCode}.xml");
             if (!File.Exists(path))
             {
@@ -54,9 +53,6 @@ namespace VaderSharp2
             LoadNegations(root);
             LoadIdioms(root);
             LoadBooster(root);
-#elif RELEASE
-            throw new System.NotImplementedException("ConfigStore is in PoC state.");
-#endif
         }
 
         /// <summary>
