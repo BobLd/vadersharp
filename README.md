@@ -6,6 +6,8 @@ Previously VADER was only available in python (https://github.com/cjhutto/vaderS
 VaderSharp2 is an updated version of the original VaderSharp.
 
 [![Linux](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml)
+[![Mac OS](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-macos.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-macos.yml)
+[![Windows](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-windows.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-windows.yml)
 
 ## Citation Information ([source](https://github.com/cjhutto/vaderSentiment#citation-information))
 If you use either the dataset or any of the VADER sentiment analysis tools (VADER sentiment lexicon or Python code for rule-based sentiment analysis engine) in your research, please cite the above paper. For example:  
