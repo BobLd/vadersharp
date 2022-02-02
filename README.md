@@ -5,6 +5,8 @@ Previously VADER was only available in python (https://github.com/cjhutto/vaderS
 
 VaderSharp2 is an updated version of the original VaderSharp.
 
+
+![Nuget](https://img.shields.io/nuget/v/VaderSharp2)
 [![Linux](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-linux.yml)
 [![Mac OS](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-macos.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-macos.yml)
 [![Windows](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-windows.yml/badge.svg)](https://github.com/BobLd/vadersharp/actions/workflows/dotnet-windows.yml)
