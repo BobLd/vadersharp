@@ -63,7 +63,7 @@ namespace VaderSharp2.Tests
             Assert.Equal(-0.7042, complexTest.Compound);
         }
 
-        [Fact]
+        [Fact(Skip = "ConfigStore is in PoC state")]
         public void TestConfigStore()
         {
             ConfigStore cfg = ConfigStore.CreateConfig("en-gb");

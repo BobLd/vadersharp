@@ -19,7 +19,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>D:\repos\BobLd\vadersharp\VaderSharp\VaderSharp2\VaderSharp2.xml</DocumentationFile>
+		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
