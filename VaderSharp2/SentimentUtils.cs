@@ -47,8 +47,8 @@ namespace VaderSharp2
 
         /// <summary>
         /// Booster/dampener 'intensifiers' or 'degree adverbs'.
-        /// <see cref="http://en.wiktionary.org/wiki/Category:English_degree_adverbs"/>
         /// </summary>
+        /// <remarks>http://en.wiktionary.org/wiki/Category:English_degree_adverbs</remarks>
         public static readonly Dictionary<string, double> BoosterDict = new Dictionary<string, double>
         {
             // Incr

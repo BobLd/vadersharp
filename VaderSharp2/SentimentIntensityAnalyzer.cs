@@ -8,9 +8,9 @@ using System.Globalization;
 namespace VaderSharp2
 {
     /// <summary>
-    /// An abstraction to represent the sentiment intensity analyzer.
+    /// Give a sentiment intensity score to sentences.
     /// </summary>
-    public class SentimentIntensityAnalyzer
+    public sealed class SentimentIntensityAnalyzer
     {
         private const double ExclIncr = 0.292;
         private const double QuesIncrSmall = 0.18;
@@ -22,6 +22,9 @@ namespace VaderSharp2
         private readonly Dictionary<string, string> Emojis;
         private readonly string[] EmojiFullFile;
 
+        /// <summary>
+        /// Give a sentiment intensity score to sentences.
+        /// </summary>
         public SentimentIntensityAnalyzer()
         {
             Assembly assembly = typeof(SentimentIntensityAnalyzer).GetTypeInfo().Assembly;
@@ -33,32 +36,53 @@ namespace VaderSharp2
                 Lexicon = MakeLexDic();
             }
 
+            Array.Clear(LexiconFullFile, 0, LexiconFullFile.Length);
+
             using (var stream = assembly.GetManifestResourceStream("VaderSharp2.emoji_utf8_lexicon.txt"))
             using (var reader = new StreamReader(stream))
             {
                 EmojiFullFile = reader.ReadToEnd().Split('\n');
                 Emojis = MakeEmojiDic();
             }
+
+            Array.Clear(EmojiFullFile, 0, EmojiFullFile.Length);
         }
 
+        /// <summary>
+        /// Give a sentiment intensity score to sentences.
+        /// </summary>
+        /// <param name="lexiconFile"></param>
+        /// <param name="emojiLexicon"></param>
+        /// <exception cref="FileNotFoundException"></exception>
         public SentimentIntensityAnalyzer(string lexiconFile, string emojiLexicon)
         {
-            if (Lexicon == null)
+            if (!File.Exists(lexiconFile))
             {
-                if (!File.Exists(lexiconFile))
-                {
-                    throw new Exception("Lexicon file not found");
-                }
-
-                using (var stream = new FileStream(lexiconFile, FileMode.Open))
-                using (var reader = new StreamReader(stream))
-                {
-                    LexiconFullFile = reader.ReadToEnd().Split('\n');
-                    Lexicon = MakeLexDic();
-                }
+                throw new FileNotFoundException("Lexicon file not found", lexiconFile);
             }
 
-            throw new NotImplementedException("emojiLexicon");
+            if (!File.Exists(emojiLexicon))
+            {
+                throw new FileNotFoundException("Emoji file not found", emojiLexicon);
+            }
+
+            using (var stream = new FileStream(lexiconFile, FileMode.Open))
+            using (var reader = new StreamReader(stream))
+            {
+                LexiconFullFile = reader.ReadToEnd().Split('\n');
+                Lexicon = MakeLexDic();
+            }
+
+            Array.Clear(LexiconFullFile, 0, LexiconFullFile.Length);
+
+            using (var stream = new FileStream(emojiLexicon, FileMode.Open))
+            using (var reader = new StreamReader(stream))
+            {
+                EmojiFullFile = reader.ReadToEnd().Split('\n');
+                Emojis = MakeEmojiDic();
+            }
+
+            Array.Clear(EmojiFullFile, 0, EmojiFullFile.Length);
         }
 
         /// <summary>
@@ -80,11 +104,12 @@ namespace VaderSharp2
         /// </summary>
         private Dictionary<string, string> MakeEmojiDic()
         {
+            // Using emoji as string instead of char should fix https://github.com/cjhutto/vaderSentiment/issues/99
             var emoji_dict = new Dictionary<string, string>();
             foreach (var line in EmojiFullFile)
             {
                 var lineArray = line.Trim().Split('\t');
-                string emoji = lineArray[0]; // emoji should be a char
+                string emoji = lineArray[0];
                 emoji_dict.Add(emoji, lineArray[1]);
             }
             return emoji_dict;
@@ -96,7 +121,7 @@ namespace VaderSharp2
         /// </summary>
         public SentimentAnalysisResults PolarityScores(string text)
         {
-            // convert emojis to their textual descriptions
+            // Convert emojis to their textual descriptions
             foreach (var em in Emojis.Where(kvp => text.Contains(kvp.Key)))
             {
                 text = text.Replace(em.Key, em.Value);
@@ -112,7 +137,8 @@ namespace VaderSharp2
             {
                 string item = wordsAndEmoticons[i];
                 double valence = 0;
-                if (i < wordsAndEmoticons.Count - 1 && item.ToLower() == "kind" && wordsAndEmoticons[i + 1].ToLower() == "of"
+                if ((i < wordsAndEmoticons.Count - 1 && item.ToLower() == "kind" && wordsAndEmoticons[i + 1].ToLower() == "of")
+                    // check for vader_lexicon words that may be used as modifiers or negations
                     || SentimentUtils.BoosterDict.ContainsKey(item.ToLower()))
                 {
                     sentiments.Add(valence);
@@ -141,10 +167,10 @@ namespace VaderSharp2
             // Get the sentiment valence 
             valence = Lexicon[itemLowerCase];
 
-            // check for "no" as negation for an adjacent lexicon item vs "no" as its own stand-alone lexicon item
+            // Check for "no" as negation for an adjacent lexicon item vs "no" as its own stand-alone lexicon item
             if (itemLowerCase == "no" && i != wordsAndEmoticons.Count - 1 && Lexicon.ContainsKey(wordsAndEmoticons[i + 1].ToLower()))
             {
-                // don't use valence of "no" as a lexicon item. Instead set it's valence to 0.0 and negate the next item
+                // Don't use valence of "no" as a lexicon item. Instead set it's valence to 0.0 and negate the next item
                 valence = 0;
             }
 
@@ -263,7 +289,7 @@ namespace VaderSharp2
             else if (startI == 1)
             {
                 if (wordsAndEmoticonsLower[i - 2] == "never" &&
-                    (wordsAndEmoticonsLower[i - 1] == "so" || wordsAndEmoticonsLower[i - 1] == "this"))
+                   (wordsAndEmoticonsLower[i - 1] == "so" || wordsAndEmoticonsLower[i - 1] == "this"))
                 {
                     valence *= 1.25;
                 }
@@ -330,9 +356,8 @@ namespace VaderSharp2
                 }
             }
 
-            // check for booster/dampener bi-grams such as 'sort of' or 'kind of'
-            var nGrams = new[] { threeTwoOne, threeTwo, twoOne };
-            foreach (var nGram in nGrams)
+            // Check for booster/dampener bi-grams such as 'sort of' or 'kind of'
+            foreach (string nGram in new[] { threeTwoOne, threeTwo, twoOne })
             {
                 if (SentimentUtils.BoosterDict.ContainsKey(nGram))
                 {
@@ -359,7 +384,7 @@ namespace VaderSharp2
                 epCount = 4;
             }
 
-            // (empirically derived mean sentiment intensity rating increase for exclamation points)
+            // Empirically derived mean sentiment intensity rating increase for exclamation points
             return epCount * ExclIncr;
         }
 
@@ -375,7 +400,7 @@ namespace VaderSharp2
                 return 0;
             }
 
-            // (empirically derived mean sentiment intensity rating increase for question marks)
+            // Empirically derived mean sentiment intensity rating increase for question marks
             return qmCount <= 3 ? qmCount * QuesIncrSmall : QuesIncrLarge;
         }
 
@@ -390,11 +415,11 @@ namespace VaderSharp2
             {
                 if (sentiment > 0)
                 {
-                    siftSentiments.PosSum += (sentiment + 1); // compensates for neutral words that are counted as 1
+                    siftSentiments.PosSum += sentiment + 1; // Compensates for neutral words that are counted as 1
                 }
                 else if (sentiment < 0)
                 {
-                    siftSentiments.NegSum += (sentiment - 1); // when used with math.fabs(), compensates for neutrals
+                    siftSentiments.NegSum += sentiment - 1; // When used with math.fabs(), compensates for neutrals
                 }
                 else if (sentiment == 0)
                 {
@@ -408,7 +433,7 @@ namespace VaderSharp2
         {
             if (sentiments.Count == 0)
             {
-                return new SentimentAnalysisResults(); //will return with all 0
+                return new SentimentAnalysisResults(); // Will return with all 0
             }
 
             double sum = sentiments.Sum();
@@ -419,7 +444,7 @@ namespace VaderSharp2
             double compound = SentimentUtils.Normalize(sum);
             SiftSentiments sifted = SiftSentimentScores(sentiments);
 
-            // compute and add emphasis from punctuation in text
+            // Compute and add emphasis from punctuation in text
             if (sifted.PosSum > Math.Abs(sifted.NegSum))
             {
                 sifted.PosSum += puncAmplifier;
