@@ -23,6 +23,9 @@ If you use either the dataset or any of the VADER sentiment analysis tools (VADE
 
 **NOTE:** There is a problem with how the [`_but_check`](https://github.com/cjhutto/vaderSentiment/blob/d8da3e21374a57201b557a4c91ac4dc411a08fed/vaderSentiment/vaderSentiment.py#L333-L346) function works in the python version - it uses `sentiments.index(sentiment)` on the double value... This results in unexpected results. This version has the correct behaviour.
 
+## Versioning
+The VaderSharp2 follows the Python version, and the last number is the C# version, e.g. `3.3.2.1` is Python version `3.3.2` and C# version `.1`
+
 ## Getting Started
 To install VaderSharp, run the following command in the Package Manager Console:
 
