@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Version>3.3.2</Version>
-    <Description>A sentiment analysis algorithm in C#. v2 of the library updated to target .Net 5.
+    <Description>A sentiment analysis algorithm in C#. v2 of the library updated to target .Net 6.
 Forked from https://github.com/codingupastorm/vadersharp</Description>
     <PackageProjectUrl>https://github.com/BobLd/vadersharp</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
