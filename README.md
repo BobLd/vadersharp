@@ -53,6 +53,71 @@ Console.WriteLine("Neutral score: " + results.Neutral);
 Console.WriteLine("Compound score: " + results.Compound);
 ```
 
+### Code example
+```csharp
+using VaderSharp2;
+
+var sentences = new[]
+{
+    "VADER is smart, handsome, and funny.",  // positive sentence example
+    "VADER is smart, handsome, and funny!",  // punctuation emphasis handled correctly (sentiment intensity adjusted)
+    "VADER is very smart, handsome, and funny.", // booster words handled correctly (sentiment intensity adjusted)
+    "VADER is VERY SMART, handsome, and FUNNY.",  //  emphasis for ALLCAPS handled
+    "VADER is VERY SMART, handsome, and FUNNY!!!", // combination of signals - VADER appropriately adjusts intensity
+    "VADER is VERY SMART, uber handsome, and FRIGGIN FUNNY!!!", //  booster words & punctuation make this close to ceiling for score
+    "VADER is not smart, handsome, nor funny.",  // negation sentence example
+    "The book was good.",  // positive sentence
+    "At least it isn't a horrible book.",  // negated negative sentence with contraction
+    "The book was only kind of good.", // qualified positive sentence is handled correctly (intensity adjusted)
+    "The plot was good, but the characters are uncompelling and the dialog is not great.", // mixed negation sentence
+    "Today SUX!",  // negative slang with capitalization emphasis
+    "Today only kinda sux! But I'll get by, lol", // mixed sentiment example with slang and constrastive conjunction "but"
+    "Make sure you :) or :D today!",  // emoticons handled
+    "Catch utf-8 emoji such as such as 💘 and 💋 and 😁",  // emojis handled
+    "Not bad at all"  // Capitalized negation
+};
+
+var analyzer = new SentimentIntensityAnalyzer();
+
+foreach (var sentence in sentences)
+{
+    var vs = analyzer.PolarityScores(sentence);
+    Console.WriteLine(Format(sentence, vs, 64));
+}
+
+static string Format(string sentence, SentimentAnalysisResults result, int dashesCount)
+{
+    string dashes = "";
+
+    for (int i = 0; i < dashesCount - sentence.Length; i++)
+    {
+        dashes += "-";
+    }
+
+    return $"{sentence}{dashes} 'pos': {result.Positive}, 'compound': {result.Compound}, 'neu': {result.Neutral}, 'neg': {result.Negative}";
+}
+```
+
+### Output for the above example code
+```
+VADER is smart, handsome, and funny.---------------------------- 'pos': 0.746, 'compound': 0.8316, 'neu': 0.254, 'neg': 0
+VADER is smart, handsome, and funny!---------------------------- 'pos': 0.752, 'compound': 0.8439, 'neu': 0.248, 'neg': 0
+VADER is very smart, handsome, and funny.----------------------- 'pos': 0.701, 'compound': 0.8545, 'neu': 0.299, 'neg': 0
+VADER is VERY SMART, handsome, and FUNNY.----------------------- 'pos': 0.754, 'compound': 0.9227, 'neu': 0.246, 'neg': 0
+VADER is VERY SMART, handsome, and FUNNY!!!--------------------- 'pos': 0.767, 'compound': 0.9342, 'neu': 0.233, 'neg': 0
+VADER is VERY SMART, uber handsome, and FRIGGIN FUNNY!!!-------- 'pos': 0.706, 'compound': 0.9469, 'neu': 0.294, 'neg': 0
+VADER is not smart, handsome, nor funny.------------------------ 'pos': 0, 'compound': -0.7424, 'neu': 0.354, 'neg': 0.646
+The book was good.---------------------------------------------- 'pos': 0.492, 'compound': 0.4404, 'neu': 0.508, 'neg': 0
+At least it isn't a horrible book.------------------------------ 'pos': 0.322, 'compound': 0.431, 'neu': 0.678, 'neg': 0
+The book was only kind of good.--------------------------------- 'pos': 0.303, 'compound': 0.3832, 'neu': 0.697, 'neg': 0
+The plot was good, but the characters are uncompelling and the dialog is not great. 'pos': 0.094, 'compound': -0.7042, 'neu': 0.579, 'neg': 0.327
+Today SUX!------------------------------------------------------ 'pos': 0, 'compound': -0.5461, 'neu': 0.221, 'neg': 0.779
+Today only kinda sux! But I'll get by, lol---------------------- 'pos': 0.317, 'compound': 0.5249, 'neu': 0.556, 'neg': 0.127
+Make sure you :) or :D today!----------------------------------- 'pos': 0.706, 'compound': 0.8633, 'neu': 0.294, 'neg': 0
+Catch utf-8 emoji such as such as ?? and ?? and ??-------------- 'pos': 0.385, 'compound': 0.875, 'neu': 0.615, 'neg': 0
+Not bad at all-------------------------------------------------- 'pos': 0.487, 'compound': 0.431, 'neu': 0.513, 'neg': 0
+```
+
 ## About the Scoring ([source](https://github.com/cjhutto/vaderSentiment#about-the-scoring))
 * The ``compound`` score is computed by summing the valence scores of each word in the lexicon, adjusted according to the rules, and then normalized to be between -1 (most extreme negative) and +1 (most extreme positive). This is the most useful metric if you want a single unidimensional measure of sentiment for a given sentence. Calling it a 'normalized, weighted composite score' is accurate. 
  
