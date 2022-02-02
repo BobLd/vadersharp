@@ -33,7 +33,7 @@ namespace VaderSharp2
         /// </summary>
         private IList<string> GetWordsAndEmoticons()
         {
-            var wes = Text.Split(' ', System.StringSplitOptions.RemoveEmptyEntries).ToList();
+            var wes = Text.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries).ToList();
             var stripped = wes.ConvertAll(x => StripPuncIfWord(x));
             return stripped;
         }

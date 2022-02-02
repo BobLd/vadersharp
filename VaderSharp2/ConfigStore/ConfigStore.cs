@@ -31,7 +31,10 @@ namespace VaderSharp2
         /// <returns>ConfigStore object.</returns>
         public static ConfigStore CreateConfig(string languageCode = "en-gb")
         {
-            config ??= new ConfigStore(languageCode);
+            if (config == null)
+            {
+                config = new ConfigStore(languageCode);
+            }
             return config;
         }
 
