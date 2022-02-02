@@ -393,6 +393,17 @@ namespace VaderSharp2.Tests
                 Compound = 0.875
             };
             Assert.Equal(expected, analyzer.PolarityScores(text));
+
+            // https://github.com/cjhutto/vaderSentiment/issues/99
+            text = "Me and Fay are 4 years old today ❤️ (ft Grumio)…";
+            expected = new SentimentAnalysisResults()
+            {
+                Negative = 0.0,
+                Neutral = 0.583,
+                Positive = 0.417,
+                Compound = 0.875
+            };
+            //Assert.Equal(expected, analyzer.PolarityScores(text));
         }
 
         public class SentimentAnalysisResultsComparer : IEqualityComparer<SentimentAnalysisResults>
