@@ -64,7 +64,6 @@ namespace VaderSharp2
         /// <summary>
         /// Convert lexicon file to a dictionary.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         private Dictionary<string, double> MakeLexDic()
         {
             var lexDict = new Dictionary<string, double>();
@@ -79,7 +78,6 @@ namespace VaderSharp2
         /// <summary>
         /// Convert emoji lexicon file to a dictionary.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         private Dictionary<string, string> MakeEmojiDic()
         {
             var emoji_dict = new Dictionary<string, string>();
@@ -114,7 +112,7 @@ namespace VaderSharp2
             {
                 string item = wordsAndEmoticons[i];
                 double valence = 0;
-                if (i < wordsAndEmoticons.Count - 1 && item.ToLower() == "kind" && wordsAndEmoticons[i + 1] == "of"
+                if (i < wordsAndEmoticons.Count - 1 && item.ToLower() == "kind" && wordsAndEmoticons[i + 1].ToLower() == "of"
                     || SentimentUtils.BoosterDict.ContainsKey(item.ToLower()))
                 {
                     sentiments.Add(valence);
@@ -200,30 +198,33 @@ namespace VaderSharp2
         }
 
         /// <summary>
-        /// check for modification in sentiment due to contrastive conjunction 'but'
+        /// Check for modification in sentiment due to contrastive conjunction 'but'.
+        /// <para>NOTE: There is a problem with how the `_but_check` function works
+        /// in the python version - it uses `sentiments.index(sentiment)` on the double value...
+        /// This results in unexpected results.</para>
+        /// This version has the correct behaviour.
         /// </summary>
         private static IList<double> ButCheck(IList<string> wordsAndEmoticons, IList<double> sentiments)
         {
             var wordsAndEmoticonsLower = wordsAndEmoticons.Select(w => w.ToLower()).ToList();
-            if (!wordsAndEmoticonsLower.Contains("but"))
+
+            int bi = wordsAndEmoticonsLower.IndexOf("but");
+
+            if (bi < 0) // `but` not found
             {
                 return sentiments;
             }
-
-            int bi = wordsAndEmoticonsLower.IndexOf("but");
 
             for (int si = 0; si < sentiments.Count; si++)
             {
                 double sentiment = sentiments[si];
                 if (si < bi)
                 {
-                    sentiments.RemoveAt(si);
-                    sentiments.Insert(si, sentiment * 0.5);
+                    sentiments[si] *= 0.5;
                 }
                 else if (si > bi)
                 {
-                    sentiments.RemoveAt(si);
-                    sentiments.Insert(si, sentiment * 1.5);
+                    sentiments[si] *= 1.5;
                 }
             }
             return sentiments;
@@ -369,7 +370,7 @@ namespace VaderSharp2
         {
             int qmCount = text.Count(x => x == '?');
 
-            if (qmCount < 1)
+            if (qmCount <= 1)
             {
                 return 0;
             }
@@ -418,6 +419,7 @@ namespace VaderSharp2
             double compound = SentimentUtils.Normalize(sum);
             SiftSentiments sifted = SiftSentimentScores(sentiments);
 
+            // compute and add emphasis from punctuation in text
             if (sifted.PosSum > Math.Abs(sifted.NegSum))
             {
                 sifted.PosSum += puncAmplifier;

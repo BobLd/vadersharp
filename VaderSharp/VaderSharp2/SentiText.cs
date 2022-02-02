@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-//using System.Runtime.CompilerServices;
 
-//[assembly: InternalsVisibleTo("VaderSharp2.Tests")]
 namespace VaderSharp2
 {
     /// <summary>
     /// Identify sentiment-relevant string-level properties of input text.
     /// </summary>
-    /// <remarks>Checked as of 01/02/2022</remarks>
     internal class SentiText
     {
         private string Text { get; }
@@ -20,7 +17,6 @@ namespace VaderSharp2
         /// <summary>
         /// Identify sentiment-relevant string-level properties of input text.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public SentiText(string text)
         {
             Text = text;
@@ -35,10 +31,9 @@ namespace VaderSharp2
         /// <para>Leaves contractions and most emoticons.</para>
         /// Does not preserve punc-plus-letter emoticons (e.g. :D)
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         private IList<string> GetWordsAndEmoticons()
         {
-            var wes = Text.Split().Where(x => x.Length > 1).ToList();
+            var wes = Text.Split(' ', System.StringSplitOptions.RemoveEmptyEntries).ToList();
             var stripped = wes.ConvertAll(x => StripPuncIfWord(x));
             return stripped;
         }
@@ -51,7 +46,6 @@ namespace VaderSharp2
         /// then it was likely an emoticon, so return original string
         /// (ie ":)" stripped would be "", so just return ":)"
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         private static string StripPuncIfWord(string token)
         {
             var stripped = token.Trim(punctuation);

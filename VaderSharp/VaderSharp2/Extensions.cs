@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("VaderSharp2.Tests")]
 namespace VaderSharp2
 {
     internal static class Extensions
@@ -8,10 +10,21 @@ namespace VaderSharp2
         /// Determine if word is ALL CAPS
         /// </summary>
         /// <param name="word"></param>
-        /// <returns></returns>
         public static bool IsUpper(this string word)
         {
-            return !word.Any(char.IsLower);
+            bool hasLetter = false;
+            foreach (char c in word)
+            {
+                if (char.IsLetter(c))
+                {
+                    hasLetter = true;
+                    if (!char.IsUpper(c))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return hasLetter;
         }
 
         /// <summary>

@@ -7,38 +7,32 @@ namespace VaderSharp2
     /// <summary>
     /// Sentiment tools.
     /// </summary>
-    /// <remarks>Checked as of 01/02/2022</remarks>
     internal static class SentimentUtils
     {
         #region Constants
         /// <summary>
         /// Empirically derived mean sentiment intensity rating increase for booster words.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double BIncr = 0.293;
 
         /// <summary>
         /// Empirically derived mean sentiment intensity rating increase for booster words.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double BDecr = -0.293;
 
         /// <summary>
         /// Empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double CIncr = 0.733;
 
         /// <summary>
         /// Empirically derived mean sentiment intensity rating increase for using ALLCAPs to emphasize a word.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public const double NScalar = -0.74;
 
         /// <summary>
         /// Negations
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static readonly string[] Negate =
         {
             "aint", "arent", "cannot", "cant", "couldnt", "darent", "didnt", "doesnt",
@@ -55,7 +49,6 @@ namespace VaderSharp2
         /// Booster/dampener 'intensifiers' or 'degree adverbs'.
         /// <see cref="http://en.wiktionary.org/wiki/Category:English_degree_adverbs"/>
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static readonly Dictionary<string, double> BoosterDict = new Dictionary<string, double>
         {
             // Incr
@@ -88,7 +81,6 @@ namespace VaderSharp2
         /// <summary>
         /// Check for special case idioms and phrases containing lexicon words.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static readonly Dictionary<string, double> SpecialCases = new Dictionary<string, double>
         {
             { "the shit", 3 },
@@ -99,8 +91,8 @@ namespace VaderSharp2
             { "yeah right", -2 },
             { "kiss of death", -1.5 },
             { "to die for", 3 },
-            { "beating heart", 3.1 },
-            { "broken heart", -2.9 },
+            { "beating heart", 3.5 },   // set to 3.1 with 0150f59077ad3b8d899eff5d4c9670747c2d54c2 on 22 May 2020
+            //{ "broken heart", -2.9 }, // added with 0150f59077ad3b8d899eff5d4c9670747c2d54c2 on 22 May 2020
         };
         #endregion
 
@@ -108,7 +100,6 @@ namespace VaderSharp2
         /// <summary>
         /// Determine if input contains negation words.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static bool Negated(IList<string> inputWords, bool includeNt = true)
         {
             inputWords = inputWords.Select(w => w.ToLower()).ToList();
@@ -149,7 +140,6 @@ namespace VaderSharp2
         /// Normalize the score to be between -1 and 1 using an alpha that
         /// approximates the max expected value.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static double Normalize(double score, double alpha = 15)
         {
             double normScore = score / Math.Sqrt((score * score) + alpha);
@@ -171,7 +161,6 @@ namespace VaderSharp2
         /// </summary>
         /// <param name="words">The words to inspect.</param>
         /// <returns>`True` if some but not all items in `words` are ALL CAPS.</returns>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static bool AllCapDifferential(IList<string> words)
         {
             int allCapWords = 0;
@@ -191,7 +180,6 @@ namespace VaderSharp2
         /// <summary>
         /// Check if preceding words increase, decrease or negate the valence.
         /// </summary>
-        /// <remarks>Checked as of 01/02/2022</remarks>
         public static double ScalarIncDec(string word, double valence, bool isCapDiff)
         {
             string wordLower = word.ToLower();
