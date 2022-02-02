@@ -2,20 +2,21 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1;net452;net46;net461;net462;net47;net5.0;net6.0</TargetFrameworks>
-		<Version>3.3.2</Version>
-		<Description>
-			A sentiment analysis algorithm in C#. v2 of the library updated to target .Net 6.
-			Forked from https://github.com/codingupastorm/vadersharp
-		</Description>
+		<Version>3.3.2.1</Version>
+		<Description>VADER Sentiment Analysis. VADER (Valence Aware Dictionary and sEntiment Reasoner) is a lexicon and rule-based sentiment analysis tool that is specifically attuned to sentiments expressed in social media, and works well on texts from other domains.
+
+v2 of the library updated to target .Net 6 and latest Python version. Emojis are supported. C# version now tracks Python versioning.
+Forked from https://github.com/codingupastorm/vadersharp</Description>
 		<PackageProjectUrl>https://github.com/BobLd/vadersharp</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/BobLd/vadersharp</RepositoryUrl>
 		<Company />
-		<PackageTags>sentiment, analysis, vader, valence, text, algorithm</PackageTags>
+		<PackageTags>sentiment, analysis, vader, valence, text, algorithm, nlp, natural language processing</PackageTags>
 		<Authors>codingupastorm, BobLd</Authors>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -28,6 +29,13 @@
 		<EmbeddedResource Include="vader_lexicon.txt">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
