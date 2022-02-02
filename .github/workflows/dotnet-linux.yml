@@ -1,4 +1,4 @@
-name: .NET
+name: Linux
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT : true
+      DOTNET_ROOT: vadersharp/VaderSharp/VaderSharp2.Tests/
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
